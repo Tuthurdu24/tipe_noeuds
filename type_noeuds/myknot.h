@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include <stbool.h>
+#include <stdbool.h>
 
 // définition d'une corde, d'un nœud.
 // "**_p" (previous) et "**_n" (next) se basent sur la lecture selon le sens trigonométrique du nœud.
