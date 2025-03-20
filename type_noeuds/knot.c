@@ -1,30 +1,16 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-
-
-struct rope
-{
-  struct rope *cut_l;
-  struct rope *cross_l;
-  struct rope *cut_r;
-  struct rope *cross_r;
-};
-
-typedef  struct rope rope;
-typedef  struct rope knot;
+#include "myknot.h"    // définition du type et des primitives
 
 //constructeur
 
-knot *knot_create(knot *c_l,knot *x_l,knot *c_r,knot *x_r)
+knot *knot_create()
 {
   knot *k=malloc(sizeof(knot));
 
-  k-> cut_l=c_l;
-  k-> cross_l=x_l;
-  k-> cut_r=c_r;
-  k-> cross_r=x_r;
-
+  k-> cut_p = NULL;
+  k-> x_p = NULL;
+  k-> cut_n= NULL;
+  k-> x_n= NULL;
+  
   return k;
 }
 
@@ -32,10 +18,11 @@ knot *trivial_knot_create()
 {
   knot *k=malloc(sizeof(knot));
 
-  k-> cut_l=k;
-  k-> cross_l=NULL;
-  k-> cut_r=k;
-  k-> cross_r=NULL;
+  k-> cut_p=k;
+  k-> x_p=NULL;
+  k-> cut_n=k;
+  k-> x_n=NULL;
+
 
   return k;
 }
@@ -45,25 +32,49 @@ knot *clover_knot_create()
   knot *k1=malloc(sizeof(knot));
   knot *k2=malloc(sizeof(knot));
   knot *k3=malloc(sizeof(knot));
+  
+  k1-> cut_p=k3;
+  k1-> x_p=k2;
+  k1-> cut_n=k2;
+  k1-> x_n=k3;
 
-  k1-> cut_l=k3;
-  k1-> cross_l=k2;
-  k1-> cut_r=k2;
-  k1-> cross_r=k3;
+  k2-> cut_p=k1;
+  k2-> x_p=k3;
+  k2-> cut_n=k3;
+  k2-> x_n=k1;
 
-  k2-> cut_l=k1;
-  k2-> cross_l=k3;
-  k2-> cut_r=k3;
-  k2-> cross_r=k1;
-
-  k3-> cut_l=k2;
-  k3-> cross_l=k1;
-  k3-> cut_r=k1;
-  k3-> cross_r=k2;
+  k3-> cut_p=k2;
+  k3-> x_p=k1;
+  k3-> cut_n=k1;
+  k3-> x_n=k2
 
   return k1;
 }
 
+knot* clover_knot_create_rapide()
+{
+  knot *k1=malloc(sizeof(knot));
+  knot *k2=malloc(sizeof(knot));
+  knot *k3=malloc(sizeof(knot));
+  
+  knot_tie(k1, k2, k3);
+  knot_tie(k2, k3, k1);
+  knot_tie(k3, k1, k2);
+}
+
+void knot_tie(knot* kp, knot* kn, knot* k_up)       // "attache" les cordes kp (knot_previous) et kn (knot_next) et fait passer la corde k_up au dessus de l'intersection.
+{
+  assert(kp != NULL && kn != NULL && k_up != NULL);
+
+  kp->cut_n = kn;
+  kn->cut_p = kp;
+
+  kp->x_n = k_up;
+  kn->x_p = k_up;
+  
+  
+  return;
+}
 
 int main()
 {
