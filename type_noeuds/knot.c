@@ -1,6 +1,7 @@
 #include "myknot.h"    // définition du type et des primitives
 
-//constructeur
+
+// constructeurs
 
 knot *knot_create()
 {
@@ -16,13 +17,9 @@ knot *knot_create()
 
 knot *trivial_knot_create()
 {
-  knot *k=malloc(sizeof(knot));
+  knot *k = malloc(sizeof(knot));
 
-  k-> cut_p=k;
-  k-> x_p=NULL;
-  k-> cut_n=k;
-  k-> x_n=NULL;
-
+  knot_tie(k, k, NULL);
 
   return k;
 }
@@ -62,9 +59,12 @@ knot* clover_knot_create_rapide()
   knot_tie(k3, k1, k2);
 }
 
+
+// transformateurs
+
 void knot_tie(knot* kp, knot* kn, knot* k_up)       // "attache" les cordes kp (knot_previous) et kn (knot_next) et fait passer la corde k_up au dessus de l'intersection.
 {
-  assert(kp != NULL && kn != NULL && k_up != NULL);
+  assert(kp != NULL && kn != NULL);
 
   kp->cut_n = kn;
   kn->cut_p = kp;
@@ -74,6 +74,14 @@ void knot_tie(knot* kp, knot* kn, knot* k_up)       // "attache" les cordes kp (
   
   
   return;
+}
+
+
+// accesseurs
+
+int count_cross(knot* k)
+{
+
 }
 
 int main()
