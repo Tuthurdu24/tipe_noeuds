@@ -1,0 +1,17 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+
+//définition d'une corde, d'un nœud
+//les expressions "pre" (previous) et "nxt" (next) se basent sur la lecture selon le sens trigonométrique
+
+struct rope
+{
+  struct rope *pre_c;  // addresse de la corde précendente
+  struct rope *pre_x;  // addresse de la corde de coupure précédente
+  struct rope *nxt_c; // addresse de la corde suivante
+  struct rope *nxt_x; // addresse de la corde de coupure suivante
+};
+
+typedef  struct rope rope;
+typedef  struct rope knot;
