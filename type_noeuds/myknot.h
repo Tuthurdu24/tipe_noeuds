@@ -30,5 +30,7 @@ knot* infinity_knot_create();
 void knot_tie(knot* kp, knot* kn, knot* k_up);
 
 // accesseurs
-int count_cross(knot* k);
+int knot_count_cross(knot* k);
 bool is_a_node(knot* k);
+int knot_tab_i(knot* k,knot** tab,int n);
+void knot_print(knot* k);
