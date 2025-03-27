@@ -19,8 +19,12 @@ typedef  struct rope knot;
 
 // constructeurs
 knot* knot_create();
+
+   // figures
 knot* trivial_knot_create();
 knot* clover_knot_create();
+knot* star_knot_create();
+knot* infinity_knot_create();
 
 // transformateurs
 void knot_tie(knot* kp, knot* kn, knot* k_up);
