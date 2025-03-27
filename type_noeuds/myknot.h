@@ -31,6 +31,7 @@ void knot_tie(knot* kp, knot* kn, knot* k_up);
 
 // accesseurs
 int knot_count_cross(knot* k);
+int knot_count_rope(knot* k);
 bool is_a_node(knot* k);
 int knot_tab_i(knot* k,knot** tab,int n);
 void knot_print(knot* k);

@@ -89,8 +89,8 @@ void knot_tie(knot* kp, knot* kn, knot* k_up)       // "attache" les cordes kp (
 
 void self_cross(knot** addr_k)                            // remplace une boucle par une corde simple (lorsque une corde se croise elle même, elle est équivalente à une corde simple)
 {
+  assert(addr_k != NULL);
   assert(*addr_k != NULL);
-
   rope* tmp;
   rope* stop = *addr_k;
   rope* curr_r = *addr_k;
@@ -142,7 +142,7 @@ void self_cross(knot** addr_k)                            // remplace une boucle
     printf("noeud déjà optimal!\n");
   else
     {
-      *addr_k = curr_r;               // pour ne pas que k pointe sur une corde qui a été free. 
+      *addr_k = curr_r;               // pour ne pas que k pointe sur une corde qui a été free.
       printf("%d croisements optimisés!\n", n_self_cross);
     }
   return;
@@ -170,6 +170,25 @@ int knot_count_cross(knot* k)         // PAS ENCORE OK: si une corde se croise e
   return n_cross;
 }
 
+int knot_count_rope(knot* k)
+{
+  assert(k != NULL);
+  rope* curr_r = k;
+  rope* stop = k;
+  int n_cross = 0;
+  bool check = true;
+
+  while(curr_r != stop || check)
+    {
+      check = false;
+      n_cross = n_cross + 1;
+
+      curr_r = curr_r->cut_n;
+    }
+
+  return n_cross;
+}
+
 int knot_tab_i(knot* k,knot** tab,int n)
 {
   int i;
@@ -178,36 +197,48 @@ int knot_tab_i(knot* k,knot** tab,int n)
       if(tab[i]==k)
         return i;
       }
-  return -1;
+  return -2;
 }
 
 void knot_print(knot* k)
 {
-  int n=knot_count_cross(k);
-  knot **tab_k=malloc(sizeof(knot*));
+  int n=knot_count_rope(k);
+
+  knot **tab_k=malloc(sizeof(knot*)*n);
   int i;
   int i_k;
   for(i=0;i<n;i+=1)
     {
+      assert(k != NULL);
       tab_k[i]=k;
-      k=k->x_n;
-      }
+      k=k->cut_n;
+    }
 
   for(i=0;i<n;i+=1)
     {
       i_k=knot_tab_i(k,tab_k,n)+1;
       printf("(Corde %d / ",i_k);
 
-      i_k=knot_tab_i(k->x_p,tab_k,n)+1;
-      printf("lien gauche: %d / ",i_k);
       i_k=knot_tab_i(k->cut_p,tab_k,n)+1;
-      printf("croisement gauche: %d: / ",i_k);
-      i_k=knot_tab_i(k->x_n,tab_k,n)+1;
-      printf("lien droite: %d / ",i_k);
+      printf("lien gauche: %d / ",i_k);
+      if(k->x_p!=NULL)
+        {
+          i_k=knot_tab_i(k->x_p,tab_k,n)+1;
+          printf("croisement gauche: %d / ",i_k);
+        }
+      else
+        printf("croisement gauche: vide / ");
       i_k=knot_tab_i(k->cut_n,tab_k,n)+1;
-      printf("croisement droite: %d)\n",i_k);
-      k=k->x_n;
-      }
+      printf("lien droite: %d / ",i_k);
+      if(k->x_p!=NULL)
+        {
+          i_k=knot_tab_i(k->x_n,tab_k,n)+1;
+          printf("croisement droite: %d)\n",i_k);
+        }
+      else
+        printf("croisement droite: vide)\n ");
+          k=k->cut_n;
+    }
   printf("\n");
   free(tab_k);
 }
@@ -275,13 +306,27 @@ void test2()
   knot* clover = clover_knot_create();
   knot_print(clover);
 
+  knot* simple = trivial_knot_create();
+  knot_print(simple);
+
+  knot* star = star_knot_create();
+  knot_print(star);
+
+  knot* b = braid5_create();
+  knot_print(b);
+
+
+
+  knot_free(&b);
+  knot_free(&star);
+  knot_free(&clover);
+  knot_free(&simple);
 
   return;
 }
 
 int main()
 {
-  test2();
 
   return 0;
 }
