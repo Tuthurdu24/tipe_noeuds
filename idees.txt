@@ -8,6 +8,8 @@
 
 - int knot_order(knot *k): renvoie l'ordre d'un nœud									  POSSIBLE?????????
 
-- int* knot_tab(knot* k); écrit le nœud sous forme de tableau: [.....k->cut_p; k->x_p; k; k->x_n; k->cut_n;....]
+- void knot_print(knot* k); affiche le nœud et le lien entre les cordes.
+
+- int* knot_of_tab(int* tab); associe une corde à chaque numéro différent et les relie.
 
 - int* jones_poly(knot* k): renvoie un tableau contenant les coefficient du polynôme de Jones.
