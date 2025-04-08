@@ -11,9 +11,10 @@ knot *knot_create()
   
   k-> cut_n= NULL;
   k-> x_n= NULL;
-  
+
   return k;
 }
+
 
 
 knot* knot_of_tab(int* tab, int n)
@@ -71,6 +72,9 @@ knot* knot_of_tab(int* tab, int n)
 
 
 //         figures
+
+//figures
+
 knot *trivial_knot_create()
 {
   knot *k = malloc(sizeof(knot));
@@ -85,7 +89,7 @@ knot* clover_knot_create()
   knot *k1=malloc(sizeof(knot));
   knot *k2=malloc(sizeof(knot));
   knot *k3=malloc(sizeof(knot));
-  
+
   knot_tie(k1, k2, k3);
   knot_tie(k2, k3, k1);;
   knot_tie(k3, k1, k2);
@@ -117,13 +121,13 @@ knot* braid_knot_create()
   knot* k3=malloc(sizeof(knot));
   knot* k4=malloc(sizeof(knot));
   knot* k5=malloc(sizeof(knot));
-  
+
   knot_tie(k1, k2, k1);
   knot_tie(k2, k4, k3);
   knot_tie(k4, k5, k5);
   knot_tie(k5, k3, k4);
   knot_tie(k3, k1, k2);
-  
+
   return k1;
 }
 
@@ -139,15 +143,14 @@ void knot_tie(knot* kp, knot* kn, knot* k_up)       // "attache" les cordes kp (
 
   kp->x_n = k_up;
   kn->x_p = k_up;
-  
-  
+
   return;
 }
 
 void knot_self_cross(knot** addr_k)                            // remplace une boucle par une corde simple (lorsque une corde se croise elle même, elle est équivalente à une corde simple)
 {
+  assert(addr_k != NULL);
   assert(*addr_k != NULL);
-
   rope* tmp;
   rope* stop = *addr_k;
   rope* curr_r = *addr_k;
@@ -165,10 +168,10 @@ void knot_self_cross(knot** addr_k)                            // remplace une b
 	  curr_r->cut_p->cut_n = curr_r->cut_n;
 	  curr_r->cut_n->cut_p = curr_r->cut_p;
 	  curr_r->cut_n->x_p = curr_r->cut_p->x_n;
-	      
+
 	  n_self_cross = n_self_cross + 1;
 
-	  free_r = true; 
+	  free_r = true;
 	}
       if (curr_r->x_p == curr_r)
 	{
@@ -176,7 +179,7 @@ void knot_self_cross(knot** addr_k)                            // remplace une b
 	  curr_r->cut_p->cut_n = curr_r->cut_n;
 	  curr_r->cut_n->cut_p = curr_r->cut_p;
 	  curr_r->cut_p->x_n = curr_r->cut_n->x_p;
-	      
+
 	  n_self_cross = n_self_cross + 1;
 
 	  free_r = true;
@@ -199,7 +202,7 @@ void knot_self_cross(knot** addr_k)                            // remplace une b
     printf("noeud déjà optimal!\n");
   else
     {
-      *addr_k = curr_r;               // pour ne pas que k pointe sur une corde qui a été free. 
+      *addr_k = curr_r;               // pour ne pas que k pointe sur une corde qui a été free.
       printf("%d croisements optimisés!\n", n_self_cross);
     }
   return;
@@ -214,18 +217,19 @@ int knot_count_cross(knot* k)         // PAS ENCORE OK: si une corde se croise e
   rope* stop = k;
   int n_cross = 0;
   bool check = true;
-  
+
   while(curr_r != stop || check)
     {
       check = false;
       if(curr_r->x_n != NULL)
 	n_cross = n_cross + 1;
-      
+
       curr_r = curr_r->cut_n;
     }
-  
+
   return n_cross;
 }
+
 
 int max_tab(int* tab, int n)
 {
@@ -239,6 +243,79 @@ int max_tab(int* tab, int n)
 	max = tab[i];
     }
   return max;
+
+int knot_count_rope(knot* k)
+{
+  assert(k != NULL);
+  rope* curr_r = k;
+  rope* stop = k;
+  int n_cross = 0;
+  bool check = true;
+
+  while(curr_r != stop || check)
+    {
+      check = false;
+      n_cross = n_cross + 1;
+
+      curr_r = curr_r->cut_n;
+    }
+
+  return n_cross;
+}
+
+int knot_tab_i(knot* k,knot** tab,int n)
+{
+  int i;
+  for(i=0;i<n;i+=1)
+    {
+      if(tab[i]==k)
+        return i;
+      }
+  return -2;
+}
+
+void knot_print(knot* k)
+{
+  int n=knot_count_rope(k);
+
+  knot **tab_k=malloc(sizeof(knot*)*n);
+  int i;
+  int i_k;
+  for(i=0;i<n;i+=1)
+    {
+      assert(k != NULL);
+      tab_k[i]=k;
+      k=k->cut_n;
+    }
+
+  for(i=0;i<n;i+=1)
+    {
+      i_k=knot_tab_i(k,tab_k,n)+1;
+      printf("(Corde %d / ",i_k);
+
+      i_k=knot_tab_i(k->cut_p,tab_k,n)+1;
+      printf("lien gauche: %d / ",i_k);
+      if(k->x_p!=NULL)
+        {
+          i_k=knot_tab_i(k->x_p,tab_k,n)+1;
+          printf("croisement gauche: %d / ",i_k);
+        }
+      else
+        printf("croisement gauche: vide / ");
+      i_k=knot_tab_i(k->cut_n,tab_k,n)+1;
+      printf("lien droite: %d / ",i_k);
+      if(k->x_p!=NULL)
+        {
+          i_k=knot_tab_i(k->x_n,tab_k,n)+1;
+          printf("croisement droite: %d)\n",i_k);
+        }
+      else
+        printf("croisement droite: vide)\n ");
+          k=k->cut_n;
+    }
+  printf("\n");
+  free(tab_k);
+
 }
 
 // destructeurs
@@ -248,7 +325,7 @@ void knot_free(knot** addr_k)
   assert(addr_k != NULL && *addr_k != NULL);
   rope* curr_r = (*addr_k)->cut_n;
   rope* tmp;
-  
+
   while(curr_r != *addr_k)
     {
       tmp = curr_r;
@@ -258,9 +335,10 @@ void knot_free(knot** addr_k)
 
   free(*addr_k);
   *addr_k = NULL;
-  
+
   return;
 }
+
 
 void test3()
 {
@@ -291,14 +369,20 @@ void test3()
   return;
 }
 
+
 void test1()
 {
   knot* clover = clover_knot_create();
   int n = knot_count_cross(clover);
+
   printf("Nombre de croissements pour le noeud trèfle: %d\n", n); 
   knot_self_cross(&clover);
+
+  printf("Nombre de croissements pour le noeud trèfle: %d\n", n);
+  self_cross(&clover);
+
   printf("\n");
-  
+
   knot* simple = trivial_knot_create();
   int nt = knot_count_cross(simple);
   printf("Nombre de croisements pour le noeud simple: %d\n", nt);
@@ -311,13 +395,47 @@ void test1()
   knot_self_cross(&star);
   printf("\n");
 
+
   knot* b = braid_create();
   int nb = knot_count_cross(b);
   printf("Nombre de croisements pour la tresse de 5: %d\n", nb);
   
   knot_self_cross(&b);
+
+  knot* b = braid5_create();
+  int nb = knot_count_cross(b);
+  printf("Nombre de croisements pour la tresse de 5: %d\n", nb);
+
+  self_cross(&b);
+
   nb = knot_count_cross(b);
   printf("Nombre de croisement pour la tresse de 5 après optimisation: %d\n", nb);
+
+  knot_free(&b);
+  knot_free(&star);
+  knot_free(&clover);
+  knot_free(&simple);
+
+
+
+  return;
+}
+
+void test2()
+{
+  knot* clover = clover_knot_create();
+  knot_print(clover);
+
+  knot* simple = trivial_knot_create();
+  knot_print(simple);
+
+  knot* star = star_knot_create();
+  knot_print(star);
+
+  knot* b = braid5_create();
+  knot_print(b);
+
+
 
   knot_free(&b);
   knot_free(&star);
@@ -329,7 +447,8 @@ void test1()
 
 int main()
 {
+
   test3();
-    
+
   return 0;
 }

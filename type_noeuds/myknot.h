@@ -34,7 +34,14 @@ void knot_self_cross(knot** addr_k);
 
 // accesseurs
 int knot_count_cross(knot* k);
+
 int knot_nbr_tricolor(knot* k);
 
 // destructeurs
 void knot_free(knot** addr_k);
+
+int knot_count_rope(knot* k);
+bool is_a_node(knot* k);
+int knot_tab_i(knot* k,knot** tab,int n);
+void knot_print(knot* k);
+
