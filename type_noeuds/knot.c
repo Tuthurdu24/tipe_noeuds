@@ -15,6 +15,61 @@ knot *knot_create()
   return k;
 }
 
+
+knot* knot_of_tab(int* tab, int n)
+{
+  assert(tab != NULL);
+  
+  knot* new_k;
+  rope* curr_r;
+  
+  int i;
+  int max = max_tab(tab, n);
+  rope** rope_tab = malloc(max*sizeof(rope*));
+  
+  rope* rope_start;
+  rope* rope_end;
+
+  for(i=0; i< max; i=i+1)
+    rope_tab[i] = NULL;
+  
+  for(i=0; i< n; i=i+1)
+    if(rope_tab[tab[i] - 1] == NULL)
+      rope_tab[tab[i] - 1] = knot_create();
+  
+  new_k = rope_tab[tab[0] - 1];
+  
+  for(i=0; i < n; i = i+2)
+    {
+      curr_r = rope_tab[tab[i] - 1];
+      
+      if (i != 0)
+	{
+	  curr_r->cut_p = rope_tab[tab[i-2] - 1];
+	  curr_r->x_p = rope_tab[tab[i-1] - 1];
+	}
+      if (i < n-2)
+	{
+	  curr_r->x_n = rope_tab[tab[i+1] - 1];
+	  curr_r->cut_n = rope_tab[tab[i+2] - 1];
+	}
+    }
+
+  rope_start = rope_tab[tab[0] - 1];
+  rope_end = curr_r;
+
+  rope_start->x_p = rope_tab[tab[n-1] - 1];
+  rope_start->cut_p = rope_end;
+
+  rope_end->cut_n = rope_start;
+  rope_end->x_n = rope_tab[tab[n-1] - 1];
+
+  free(rope_tab);
+  
+  return new_k; 
+}
+
+
 //         figures
 knot *trivial_knot_create()
 {
@@ -55,7 +110,7 @@ knot* star_knot_create()
   return k1;
 }
 
-knot* braid_create()
+knot* braid_knot_create()
 {
   knot* k1=malloc(sizeof(knot));
   knot* k2=malloc(sizeof(knot));
@@ -185,62 +240,6 @@ int max_tab(int* tab, int n)
     }
   return max;
 }
-
-
-knot* knot_of_tab(int* tab, int n)
-{
-  assert(tab != NULL);
-  
-  knot* new_k;
-  rope* curr_r;
-  
-  int i;
-  int max = max_tab(tab, n);
-  rope** rope_tab = malloc(max*sizeof(rope*));
-  
-  rope* rope_start;
-  rope* rope_end;
-
-  for(i=0; i< max; i=i+1)
-    rope_tab[i] = NULL;
-  
-  for(i=0; i< n; i=i+1)
-    if(rope_tab[tab[i] - 1] == NULL)
-      rope_tab[tab[i] - 1] = knot_create();
-  
-  new_k = rope_tab[tab[0] - 1];
-  
-  for(i=0; i < n; i = i+2)
-    {
-      curr_r = rope_tab[tab[i] - 1];
-      
-      if (i != 0)
-	{
-	  curr_r->cut_p = rope_tab[tab[i-2] - 1];
-	  curr_r->x_p = rope_tab[tab[i-1] - 1];
-	}
-      if (i < n-2)
-	{
-	  curr_r->x_n = rope_tab[tab[i+1] - 1];
-	  curr_r->cut_n = rope_tab[tab[i+2] - 1];
-	}
-    }
-
-  rope_start = rope_tab[tab[0] - 1];
-  rope_end = curr_r;
-
-  rope_start->x_p = rope_tab[tab[n-1] - 1];
-  rope_start->cut_p = rope_end;
-
-  rope_end->cut_n = rope_start;
-  rope_end->x_n = rope_tab[tab[n-1] - 1];
-
-  free(rope_tab);
-  
-  return new_k; 
-}
-
-
 
 // destructeurs
 
