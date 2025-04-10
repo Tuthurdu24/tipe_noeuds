@@ -137,7 +137,7 @@ void self_cross(knot** addr_k)                            // remplace une boucle
       curr_r->x_p = NULL;
       n_self_cross = n_self_cross + 1;
     }
-  
+
   if (n_self_cross == 0)
     printf("noeud déjà optimal!\n");
   else
@@ -150,7 +150,7 @@ void self_cross(knot** addr_k)                            // remplace une boucle
 
 // accesseurs
 
-int knot_count_cross(knot* k)         // PAS ENCORE OK: si une corde se croise elle meme, est ce qu'on compte le croisement???????????????????? 
+int knot_count_cross(knot* k)
 {
   assert(k != NULL);
   rope* curr_r = k;
@@ -243,6 +243,97 @@ void knot_print(knot* k)
   free(tab_k);
 }
 
+int aux_tricolor(knot *k,int i,int nc,char *tab_c,knot **tab_k)
+{
+  int nbr_tric=0;
+  int j;
+
+  if(i==nc)
+    {
+      char c_prev;
+      char c_next;
+      char c_cut; //color cut
+      for(j=0;j<nc;j+=1)
+        {
+          //k=tab_k[j];
+
+          c_prev=tab_c[j];
+
+          if(j==nc-1)
+            c_next=tab_c[0];
+          else
+            c_next=tab_c[j+1];
+
+
+          c_cut=tab_c[knot_tab_i(k->x_n,tab_k,nc)];
+
+          if(c_prev==c_next)
+            {
+              if(c_cut!=c_prev)
+               {
+                 //printf("1,i:%d %s\n %c %c %c \n\n",j,tab_c,c_prev,c_next,c_cut);
+                 return 0;
+               }
+            }
+          else
+            {
+              if(c_cut==c_prev || c_cut==c_next)
+                {
+                  //printf("2,i:%d %s\n %c %c %c \n\n",j,tab_c,c_prev,c_next,c_cut);
+                  return 0;
+                }
+            }
+          k=k->cut_n;
+        }
+      //printf("3:%s\n",tab_c);
+      return 1;
+    }
+  else
+    {
+      tab_c[i]='b';
+      nbr_tric+=aux_tricolor(k,i+1,nc,tab_c,tab_k);
+
+      tab_c[i]='r';
+      nbr_tric+=aux_tricolor(k,i+1,nc,tab_c,tab_k);
+
+      tab_c[i]='g';
+      nbr_tric+=aux_tricolor(k,i+1,nc,tab_c,tab_k);
+    }
+  return nbr_tric;
+}
+
+
+int knot_nbr_tricolor(knot* k)
+{
+  int nbr_tric=0;
+  int nc=knot_count_rope(k);
+  char* tab_c=malloc(sizeof(char)*(nc+1));
+  tab_c[nc] = '\0';
+  knot **tab_k=malloc(sizeof(knot*)*nc);
+  int i;
+  for(i=0;i<nc;i+=1)
+    {
+      assert(k != NULL);
+      tab_k[i]=k;
+      k=k->cut_n;
+    }
+
+  tab_c[0]='b';
+  nbr_tric+=aux_tricolor(k,1,nc,tab_c,tab_k);
+
+  tab_c[0]='r';
+  nbr_tric+=aux_tricolor(k,1,nc,tab_c,tab_k);
+
+  tab_c[0]='g';
+  nbr_tric+=aux_tricolor(k,1,nc,tab_c,tab_k);
+
+  free(tab_c);
+  free(tab_k);
+
+  return nbr_tric;
+}
+
+
 // destructeurs
 
 void knot_free(knot** addr_k)
@@ -315,6 +406,8 @@ void test2()
   knot* b = braid5_create();
   knot_print(b);
 
+  printf("nbr tricoloriage clover:%d\n",knot_nbr_tricolor(clover));
+  printf("nbr tricoloriage star:%d\n",knot_nbr_tricolor(star));
 
 
   knot_free(&b);
@@ -327,6 +420,7 @@ void test2()
 
 int main()
 {
+  test2();
 
   return 0;
 }
