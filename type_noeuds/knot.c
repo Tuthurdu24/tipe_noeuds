@@ -8,13 +8,73 @@ knot *knot_create()
 
   k-> cut_p = NULL;
   k-> x_p = NULL;
+  
   k-> cut_n= NULL;
   k-> x_n= NULL;
 
   return k;
 }
 
+
+
+knot* knot_of_tab(int* tab, int n)
+{
+  assert(tab != NULL);
+  
+  knot* new_k;
+  rope* curr_r;
+  
+  int i;
+  int max = max_tab(tab, n);
+  rope** rope_tab = malloc(max*sizeof(rope*));
+  
+  rope* rope_start;
+  rope* rope_end;
+
+  for(i=0; i< max; i=i+1)
+    rope_tab[i] = NULL;
+  
+  for(i=0; i< n; i=i+1)
+    if(rope_tab[tab[i] - 1] == NULL)
+      rope_tab[tab[i] - 1] = knot_create();
+  
+  new_k = rope_tab[tab[0] - 1];
+  
+  for(i=0; i < n; i = i+2)
+    {
+      curr_r = rope_tab[tab[i] - 1];
+      
+      if (i != 0)
+	{
+	  curr_r->cut_p = rope_tab[tab[i-2] - 1];
+	  curr_r->x_p = rope_tab[tab[i-1] - 1];
+	}
+      if (i < n-2)
+	{
+	  curr_r->x_n = rope_tab[tab[i+1] - 1];
+	  curr_r->cut_n = rope_tab[tab[i+2] - 1];
+	}
+    }
+
+  rope_start = rope_tab[tab[0] - 1];
+  rope_end = curr_r;
+
+  rope_start->x_p = rope_tab[tab[n-1] - 1];
+  rope_start->cut_p = rope_end;
+
+  rope_end->cut_n = rope_start;
+  rope_end->x_n = rope_tab[tab[n-1] - 1];
+
+  free(rope_tab);
+  
+  return new_k; 
+}
+
+
+//         figures
+
 //figures
+
 knot *trivial_knot_create()
 {
   knot *k = malloc(sizeof(knot));
@@ -54,7 +114,7 @@ knot* star_knot_create()
   return k1;
 }
 
-knot* braid5_create()
+knot* braid_knot_create()
 {
   knot* k1=malloc(sizeof(knot));
   knot* k2=malloc(sizeof(knot));
@@ -87,7 +147,7 @@ void knot_tie(knot* kp, knot* kn, knot* k_up)       // "attache" les cordes kp (
   return;
 }
 
-void self_cross(knot** addr_k)                            // remplace une boucle par une corde simple (lorsque une corde se croise elle même, elle est équivalente à une corde simple)
+void knot_self_cross(knot** addr_k)                            // remplace une boucle par une corde simple (lorsque une corde se croise elle même, elle est équivalente à une corde simple)
 {
   assert(addr_k != NULL);
   assert(*addr_k != NULL);
@@ -170,6 +230,20 @@ int knot_count_cross(knot* k)
   return n_cross;
 }
 
+
+int max_tab(int* tab, int n)
+{
+  assert(tab != NULL);
+  int i;
+  int max = tab[0];
+  
+  for (i = 0; i<n; i=i+1)
+    {
+      if (tab[i] > max)
+	max = tab[i];
+    }
+  return max;
+
 int knot_count_rope(knot* k)
 {
   assert(k != NULL);
@@ -241,6 +315,7 @@ void knot_print(knot* k)
     }
   printf("\n");
   free(tab_k);
+
 }
 
 int aux_tricolor(knot *k,int i,int nc,char *tab_c,knot **tab_k)
@@ -355,31 +430,75 @@ void knot_free(knot** addr_k)
   return;
 }
 
+
+void test3()
+{
+  int clo[6] = {1, 2, 3, 1, 2, 3};
+  
+  knot* clover = knot_of_tab(clo, 6);
+
+  int n = knot_count_cross(clover);
+  printf("Nombre de croisements: %d\n", n);
+
+  int eig[8] = {1, 3, 2, 4, 3, 1, 4, 2};
+
+  knot* eight = knot_of_tab(eig, 8);
+
+  n = knot_count_cross(eight);
+  printf("Nombre de croisements : %d\n", n);
+   
+  int sev[14] = {1, 5, 2, 6, 3, 7, 4, 1, 5, 2, 6, 3, 7, 4};
+
+  knot* star_sev = knot_of_tab(sev, 14);
+  
+  n = knot_count_cross(star_sev);
+  printf("Nombre de croisement : %d\n", n);
+
+  knot_free(&star_sev);
+  knot_free(&clover);
+  knot_free(&eight);
+  return;
+}
+
+
 void test1()
 {
   knot* clover = clover_knot_create();
   int n = knot_count_cross(clover);
+
+  printf("Nombre de croissements pour le noeud trèfle: %d\n", n); 
+  knot_self_cross(&clover);
+
   printf("Nombre de croissements pour le noeud trèfle: %d\n", n);
   self_cross(&clover);
+
   printf("\n");
 
   knot* simple = trivial_knot_create();
   int nt = knot_count_cross(simple);
   printf("Nombre de croisements pour le noeud simple: %d\n", nt);
-  self_cross(&simple);
+  knot_self_cross(&simple);
   printf("\n");
 
   knot* star = star_knot_create();
   int ns = knot_count_cross(star);
   printf("Nombre de croisements pour le noeud étoile: %d\n", ns);
-  self_cross(&star);
+  knot_self_cross(&star);
   printf("\n");
+
+
+  knot* b = braid_create();
+  int nb = knot_count_cross(b);
+  printf("Nombre de croisements pour la tresse de 5: %d\n", nb);
+  
+  knot_self_cross(&b);
 
   knot* b = braid5_create();
   int nb = knot_count_cross(b);
   printf("Nombre de croisements pour la tresse de 5: %d\n", nb);
 
   self_cross(&b);
+
   nb = knot_count_cross(b);
   printf("Nombre de croisement pour la tresse de 5 après optimisation: %d\n", nb);
 
@@ -387,6 +506,7 @@ void test1()
   knot_free(&star);
   knot_free(&clover);
   knot_free(&simple);
+
 
 
   return;
@@ -421,6 +541,8 @@ void test2()
 int main()
 {
   test2();
+
+  test3();
 
   return 0;
 }
