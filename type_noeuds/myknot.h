@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 // définition d'une corde, d'un nœud.
-// "**_p" (previous) et "**_n" (next) se basent sur la lecture selon le sens trigonométrique du nœud.
+// "**_p" pour previous et "**_n" pour next
 struct rope
 {
   struct rope *cut_p;  // addresse de la corde précendente
@@ -20,6 +20,7 @@ typedef  struct rope knot;
 // constructeurs
 knot* knot_create();
 knot* knot_of_tab(int* tab, int n);
+int* tab_of_knot(knot* k);
 
    // figures
 knot* trivial_knot_create();
@@ -29,11 +30,20 @@ knot* braid_knot_create();
 
 // transformateurs
 void knot_tie(knot* kp, knot* kn, knot* k_up);
-void self_cross(knot** addr_k);
+void knot_self_cross(knot** addr_k);
 
 // accesseurs
 int knot_count_cross(knot* k);
 
+int knot_nbr_tricolor(knot* k);
 
 // destructeurs
 void knot_free(knot** addr_k);
+
+int knot_count_rope(knot* k);
+bool is_a_node(knot* k);
+int knot_tab_i(knot* k,knot** tab,int n);
+void knot_print(knot* k);
+int knot_nbr_tricolor(knot* k);
+
+
