@@ -1,8 +1,5 @@
 #include "myknot.h"
 
-
-
-
 void test1()
 {
   printf("--------------------- TEST 1 ---------------------\n");
@@ -63,9 +60,13 @@ void test2()
 
   knot* b = braid_knot_create();
   knot_print(b);
-
-  printf("nbr tricoloriage clover:%d\n",knot_nbr_tricolor(clover));
-  printf("nbr tricoloriage star:%d\n",knot_nbr_tricolor(star));
+  
+  int eig[8] = {1, 3, 2, 4, 3, 1, 4, 2};
+  knot* eight = knot_of_tab(eig, 8);
+  
+  printf("nbr tricoloriage eight  : %d\n",knot_nbr_tricolor(eight));
+  printf("nbr tricoloriage clover : %d\n",knot_nbr_tricolor(clover));
+  printf("nbr tricoloriage star   : %d\n",knot_nbr_tricolor(star));
 
 
   knot_free(&b);
@@ -84,13 +85,15 @@ void test3()
   knot* clover = knot_of_tab(clo, 6);
 
   int n = knot_count_cross(clover);
-  printf("Nombre de croisements: %d\n", n);
+  printf("Noeud de trèfle alloué à partir du tableau statique: "); print_array(clo, 6);
+  printf("Nombre de croisements : %d\n", n);
 
   int eig[8] = {1, 3, 2, 4, 3, 1, 4, 2};
 
   knot* eight = knot_of_tab(eig, 8);
 
   n = knot_count_cross(eight);
+  printf("\nNoeud de huit alloué à partir du tableau statique: "); print_array(eig, 8);
   printf("Nombre de croisements : %d\n", n);
    
   int sev[14] = {1, 5, 2, 6, 3, 7, 4, 1, 5, 2, 6, 3, 7, 4};
@@ -98,7 +101,8 @@ void test3()
   knot* star_sev = knot_of_tab(sev, 14);
   
   n = knot_count_cross(star_sev);
-  printf("Nombre de croisement : %d\n", n);
+  printf("\nNoeud 7-étoile alloué à partir du tableau statique: "); print_array(sev, 14);
+  printf("Nombre de croisements : %d\n", n);
 
   knot_free(&star_sev);
   knot_free(&clover);
