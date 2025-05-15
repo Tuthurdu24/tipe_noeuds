@@ -25,7 +25,7 @@ knot* knot_create();
 knot* knot_of_tab(int* tab, int n);
 int* tab_of_knot(knot* k);
 
-   // figures
+// figures
 knot* trivial_knot_create();
 knot* clover_knot_create();
 knot* star_knot_create();
@@ -47,5 +47,8 @@ bool is_a_node(knot* k);
 int knot_tab_i(knot* k,knot** tab,int n);
 void knot_print(knot* k);
 int knot_nbr_tricolor(knot* k);
+
+// annexes
+void print_array(int* tab, int n);
 
 #endif
