@@ -24,8 +24,46 @@ def braid_knot_create():
     return tab
 
 
+#accesseurs
 
+def aux_knot_nbr_tricolor(knot,i,nk,tab_c):
+    nbr_trico=0
 
+    if(i==nk):
+        for j in range(nk):
+            c_prev=tab_c[knot[j][0]]
+            c_next=tab_c[knot[j][3]]
+            c_act=tab_c[j]
+
+            if c_prev==c_next:
+                if c_act!=c_prev:
+                    return 0
+            else:
+                if c_act==c_prev or c_act==c_next:
+                    return 0
+
+        return 1
+
+    else:
+        tab_c[i]='b'
+        nbr_trico+=aux_knot_nbr_tricolor(knot,i+1,nk,tab_c)
+
+        tab_c[i]='r'
+        nbr_trico+=aux_knot_nbr_tricolor(knot,i+1,nk,tab_c)
+
+        tab_c[i]='g'
+        nbr_trico+=aux_knot_nbr_tricolor(knot,i+1,nk,tab_c)
+
+    return nbr_trico
+
+def knot_nbr_tricolor(knot):
+    nbr_trico=0
+    nk = len(knot) #nombre de cordes
+    tab_c= [0 for _ in range(nk)]
+
+    nbr_trico=aux_knot_nbr_tricolor(knot,0,nk,tab_c)
+
+    return nbr_trico
 
 
 #opérations élémentaires
@@ -35,33 +73,33 @@ def move_1(knot):     # mouvement de Reidemester de type I
     
     while i < len(knot):
         if (knot[i][1] == i):       # Le paramètre x_p de la corde est égale à l'indice de la corde: autrement dit, la corde se coupe elle même à son extrémité antérieure
-            
-            rope_p = knot[i][0] 
+
+            rope_p = knot[i][0]
             new_rope_p = knot[rope_p][0]
             new_cut_p = knot[rope_p][1]
-            
+
             knot[new_rope_p][3] = i
             knot[i][0] = new_rope_p
             knot[i][1] = new_cut_p
-            
+
             suppr_rope(knot, rope_p)
-            
+
         if (knot[i][2] == i):
-            
-            rope_n = knot[i][3] 
+
+            rope_n = knot[i][3]
             new_rope_n = knot[rope_n][3]
             new_cut_n = knot[rope_n][2]
-            
+
             knot[new_rope_n][0] = i
             knot[i][3] = new_rope_n
             knot[i][2] = new_cut_n
-            
+
             suppr_rope(knot, rope_n)
-            
+
         i = i + 1
     return
 
-            
+
 def suppr_rope(knot : List[List[int]], k: int):
     knot.pop(k)
     for rope in knot:
@@ -141,5 +179,3 @@ weirdo = [[1, 1, 1, 1],
 delete_pass_backward(weirdo)
 
 print_knot(weirdo)
-
-
