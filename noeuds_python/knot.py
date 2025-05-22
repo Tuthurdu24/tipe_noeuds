@@ -30,8 +30,9 @@ def braid_knot_create():
 
 #opérations élémentaires
 
-def delete_self_cross(knot):
+def move_1(knot):     # mouvement de Reidemester de type I
     i=0
+    
     while i < len(knot):
         if (knot[i][1] == i):       # Le paramètre x_p de la corde est égale à l'indice de la corde: autrement dit, la corde se coupe elle même à son extrémité antérieure
             
@@ -59,9 +60,8 @@ def delete_self_cross(knot):
             
         i = i + 1
     return
+
             
-
-
 def suppr_rope(knot : List[List[int]], k: int):
     knot.pop(k)
     for rope in knot:
@@ -69,6 +69,32 @@ def suppr_rope(knot : List[List[int]], k: int):
             if (rope[j] > k):
                 rope[j] = rope[j] - 1
     return
+
+def move_2(knot):     # mouvement de Reidemester de type II
+    i = 0
+
+    while i < len(knot):
+        if (knot[i][1] == knot[i][2]):
+            i_prev = knot[i][0]
+            i_next = knot[i][3]
+
+            knot[i_prev][2] = knot[i_next][2]
+            knot[i_prev][3] = knot[i_next][3]
+
+            suppr_rope(knot, i)
+
+            if (i_next > i):
+                suppr_rope(knot, i_next-1)
+            else:
+                suppr_rope(knot, i_next)
+        i =i + 1
+    return
+
+def move_3(knot : List[List[int]]):
+    i = 0
+    return
+"""    while i < len(knot):
+        i"""
 
 
 
@@ -79,15 +105,41 @@ def print_knot(knot):
     return
 
 
-clo = [[3, 2, 1, 1],
-       [0, 1, 3, 2],
-       [1, 3, 0, 3],
-       [2, 0, 2, 0]]
+clo_non_opti = [[3, 2, 1, 1],
+                [0, 1, 3, 2],
+                [1, 3, 0, 3],
+                [2, 0, 2, 0]]
 
-delete_self_cross(clo)
+delete_self_cross(clo_non_opti)
+
+print_knot(clo_non_opti)
+
+print("\n");
+
+non_opti = [[3, 0, 1, 1],
+            [0, 1, 2, 2],
+            [1, 2, 3, 3],
+            [2, 3, 0, 0]]
+
+delete_self_cross(non_opti)
+print_knot(non_opti)
+
+print("\n")
+
+braid = braid_knot_create()
+delete_self_cross(braid)
+
+print_knot(braid)
+
+print("\n")
+
+weirdo = [[1, 1, 1, 1],
+          [0, 1, 1, 0]]
 
 
 
-print_knot(clo)
+delete_pass_backward(weirdo)
+
+print_knot(weirdo)
 
 
