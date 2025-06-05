@@ -23,6 +23,13 @@ def braid_knot_create():
          [1,2,3,2]]
     return tab
 
+def eight_knot_create():
+    tab=[[3,2,3,1],
+         [0,3,0,2],
+         [1,0,1,3],
+         [2,1,2,0]]
+    return tab
+
 
 #accesseurs
 
@@ -84,7 +91,7 @@ def move_1(knot):     # mouvement de Reidemeister de type I
 
             suppr_rope(knot, rope_p)
 
-        if (knot[i][2] == i):
+        if (i < len(knot) and knot[i][2] == i):
 
             rope_n = knot[i][3]
             new_rope_n = knot[rope_n][3]
@@ -101,6 +108,8 @@ def move_1(knot):     # mouvement de Reidemeister de type I
 
 
 def suppr_rope(knot : List[List[int]], k: int):
+    if( len(knot) == 0):
+        return []
     knot.pop(k)
     for rope in knot:
         for j in range(4):
@@ -131,8 +140,13 @@ def move_2(knot):     # mouvement de Reidemeister de type II
 def move_3(knot : List[List[int]], i: int):     # mouvement de Reidemeister de type III
     inext = knot[i][3]
     iprev = knot[i][0]
+    if(inext==iprev or inext==i or iprev==i):
+        return 
     cut_next = knot[i][2]
     cut_prev = knot[i][1]
+    
+    if(len(set([inext,iprev,cut_prev,cut_next,i]))<5):
+        return 
 
     knot[iprev][2] = cut_next
     knot[inext][1] = cut_prev
@@ -159,7 +173,28 @@ def knot_is_valid(knot: List[List[int]]):
     return True
 
 
+def knot_to_prime(knot,knot_last,knot_last2):
+    if(knot==knot_last or knot==knot_last2):
+        return knot
+    else:
+        knot_start=knot
+        move_1(knot)
+        move_2(knot)
+        knot_save=knot
+        k_better=knot_to_prime(knot,knot_start,knot_last)
+        knot=knot_save
+        
+        for i in range(len(knot)):
+            cut_d=knot[i][2]
+            cut_g=knot[i][1]
+            if ((knot[cut_d][1]==cut_g or knot[cut_d][2]==cut_g) ^ (knot[cut_g][1]==cut_d or knot[cut_g][2]==cut_d)):
+                move_3(knot,i)
+                knot_new = knot_to_prime(knot,knot_start,knot_last)
+                if len(knot_new)<len(k_better):
+                    k_better=knot_new
+                knot=knot_save
 
+        return k_better
 
 
 mauvais_huit = [[1, 6, 3, 6],  
@@ -177,6 +212,7 @@ if (not knot_is_valid(mauvais_huit)):
 def print_knot(knot):
     for rope in knot:
         print(rope)
+    print("\n")
     return
 
 
@@ -222,3 +258,33 @@ weirdo = [[1, 1, 1, 1],
 move_2(weirdo)
 
 print_knot(weirdo)
+
+def test():
+    print("attendu:\n")
+    print_knot(clover_knot_create())
+    print("resultat:\n")
+    print_knot(knot_to_prime(clover_knot_create(),[],[]))
+    print("\n")
+    
+    print("attendu:\n")
+    print_knot(star_knot_create())
+    print("resultat:\n")
+    print_knot(knot_to_prime(star_knot_create(),[],[]))
+    print("\n")
+    
+    print("attendu:\n")
+    print_knot(eight_knot_create())
+    print("resultat:\n")
+    print_knot(knot_to_prime(eight_knot_create(),[],[])   )
+    print("\n")
+    
+    print("attendu:\n")
+    print_knot([])
+    print("resultat:\n")
+    print_knot(knot_to_prime(braid_knot_create(),[],[]))
+    print("\n")
+    return    
+    
+    
+    
+    
