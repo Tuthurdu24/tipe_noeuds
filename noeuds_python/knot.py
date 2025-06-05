@@ -68,7 +68,7 @@ def knot_nbr_tricolor(knot):
 
 #opérations élémentaires
 
-def move_1(knot):     # mouvement de Reidemester de type I
+def move_1(knot):     # mouvement de Reidemeister de type I
     i=0
     
     while i < len(knot):
@@ -108,7 +108,7 @@ def suppr_rope(knot : List[List[int]], k: int):
                 rope[j] = rope[j] - 1
     return
 
-def move_2(knot):     # mouvement de Reidemester de type II
+def move_2(knot):     # mouvement de Reidemeister de type II
     i = 0
 
     while i < len(knot):
@@ -128,13 +128,50 @@ def move_2(knot):     # mouvement de Reidemester de type II
         i =i + 1
     return
 
-def move_3(knot : List[List[int]]):
-    i = 0
+def move_3(knot : List[List[int]], i: int):     # mouvement de Reidemeister de type III
+    inext = knot[i][3]
+    iprev = knot[i][0]
+    cut_next = knot[i][2]
+    cut_prev = knot[i][1]
+
+    knot[iprev][2] = cut_next
+    knot[inext][1] = cut_prev
+    knot[i][1] = cut_next
+    knot[i][2] = cut_prev
+    
     return
-"""    while i < len(knot):
-        i"""
 
 
+def knot_is_valid(knot: List[List[int]]):
+    i = 0
+    rope = 0
+    rope_next = 0
+    cut_next = 0
+    while i < len(knot):
+        cut_next = knot[rope][2]
+        rope_next = knot[rope][3]
+        
+        if (knot[rope_next][0] != rope or knot[rope_next][1] != cut_next):
+            return False
+        
+        rope = rope_next
+        i = i+1
+    return True
+
+
+
+
+
+mauvais_huit = [[1, 6, 3, 6],  
+                [2, 0, 5, 0],
+                [3, 1, 4, 1],  
+                [4, 2, 6, 2],  
+                [5, 3, 1, 3],  
+                [6, 4, 2, 4],  
+                [0, 5, 0, 5]]
+
+if (not knot_is_valid(mauvais_huit)):
+    print("Noeud invalide !\n")
 
 
 def print_knot(knot):
@@ -148,7 +185,13 @@ clo_non_opti = [[3, 2, 1, 1],
                 [1, 3, 0, 3],
                 [2, 0, 2, 0]]
 
-delete_self_cross(clo_non_opti)
+move_1(clo_non_opti)
+
+if (not knot_is_valid(clo_non_opti)):
+    print("Noeud invalide !\n")
+else:
+    print("VALIDE")
+
 
 print_knot(clo_non_opti)
 
@@ -159,13 +202,13 @@ non_opti = [[3, 0, 1, 1],
             [1, 2, 3, 3],
             [2, 3, 0, 0]]
 
-delete_self_cross(non_opti)
+move_1(non_opti)
 print_knot(non_opti)
 
 print("\n")
 
 braid = braid_knot_create()
-delete_self_cross(braid)
+move_1(braid)
 
 print_knot(braid)
 
@@ -176,6 +219,6 @@ weirdo = [[1, 1, 1, 1],
 
 
 
-delete_pass_backward(weirdo)
+move_2(weirdo)
 
 print_knot(weirdo)
