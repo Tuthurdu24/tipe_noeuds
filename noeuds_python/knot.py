@@ -1,4 +1,5 @@
 from typing import List
+from itertools import permutations
 
 #figures
 
@@ -119,7 +120,6 @@ def suppr_rope(knot : List[List[int]], k: int):
 
 def move_2(knot):     # mouvement de Reidemeister de type II
     i = 0
-
     while i < len(knot):
         if (knot[i][1] == knot[i][2]):
             i_prev = knot[i][0]
@@ -197,6 +197,59 @@ def knot_to_prime(knot,knot_last,knot_last2):
         return k_better
 
 
+def knot_is_same(knot1,knot2):
+    n=len(knot1)
+    perm=permutations(range(0,n))
+    tab=[list(p) for p in perm]
+    for s_tab in tab:    #permet de tester si il existe une permuatations envoyant un noeud sur un autre dans le sens classique"
+        same=True
+        for i in range(n):
+            for j in range(4):
+                if knot1[i][j]!=s_tab[knot2[s_tab[i]][j]]:
+                    same=False
+        if same==True:
+            return True
+        
+    for s_tab in tab:            #dans le sens inverse
+        same=True
+        for i in range(n):
+            for j in range(4):
+                if knot1[n-i-1][3-j]!=s_tab[knot2[s_tab[i]][j]]:
+                    same=False
+        if same==True:
+            return True
+    
+    return False
+
+def knot_is_similar(knot1,knot2):
+    if knot_nbr_tricolor(knot1)!=knot_nbr_tricolor(knot2):
+        return False
+    knot1=knot_to_prime(knot1)
+    knot2=knot_to_prime(knot2)
+    
+    knot1_save=knot1
+    if knot_is_same(knot1,knot2)
+    for i in range(len(knot1)):
+            knot1=knot1_save
+            cut_d=knot1[i][2]
+            cut_g=knot1[i][1]
+            if ((knot1[cut_d][1]==cut_g or knot1[cut_d][2]==cut_g) ^ (knot1[cut_g][1]==cut_d or knot1[cut_g][2]==cut_d)):
+                move_3(knot1,i)
+            if knot_is_same(knot1,knot2):
+                return True
+    return False
+
+
+
+
+print(knot_is_similar([[2,1,2,1],[0,2,0,2],[1,0,1,0]],
+             [[1,2,1,2],[2,0,2,0],[0,1,0,1]]))
+             
+print(knot_is_same([[2,1,2,1],[0,2,0,2],[1,0,1,0]],
+             [[1,2,1,2],[2,0,2,0],[1,0,0,1]]))
+
+
+"""
 mauvais_huit = [[1, 6, 3, 6],  
                 [2, 0, 5, 0],
                 [3, 1, 4, 1],  
@@ -285,6 +338,6 @@ def test():
     print("\n")
     return    
     
-    
+ """   
     
     
