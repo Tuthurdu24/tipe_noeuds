@@ -1,10 +1,13 @@
 - amélioration tricoloriage
 - étude complexité
 - représentation graphique des nœuds à partir de la représentation tableau
+- polynômes d'alexender (recherches ++)
 
-
-
+idée:
+1-Utilisé polynome d'Alexander ou Jones pour savoir si 2noeuds sont semblables (si ils le font)
+2-Si oui, utiliser notre algorithme pour savoir comment passer dez l'un à l'autre
 
 idées annexes:
 (- reconnaissance d'image)
 (- polynômes d'alexender (recherches ++++))
+
