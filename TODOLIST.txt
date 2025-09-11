@@ -1,0 +1,10 @@
+- amélioration tricoloriage
+- étude complexité
+- représentation graphique des nœuds à partir de la représentation tableau
+
+
+
+
+idées annexes:
+(- reconnaissance d'image)
+(- polynômes d'alexender (recherches ++++))
